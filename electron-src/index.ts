@@ -12,8 +12,11 @@ app.on('ready', async () => {
   await prepareNext('./renderer')
 
   const mainWindow = new BrowserWindow({
+    frame: false,
     width: 800,
     height: 600,
+    minHeight: 500,
+    minWidth: 600,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: false,
@@ -30,6 +33,8 @@ app.on('ready', async () => {
       })
 
   mainWindow.loadURL(url)
+
+  if(isDev) mainWindow.webContents.openDevTools()
 })
 
 // Quit the app once all windows are closed
@@ -39,4 +44,8 @@ app.on('window-all-closed', app.quit)
 ipcMain.on('message', (event: IpcMainEvent, message: any) => {
   console.log(message)
   setTimeout(() => event.sender.send('message', 'hi from electron'), 500)
+})
+ipcMain.on('exit', () => {
+  console.log("quit")
+  app.quit();
 })
